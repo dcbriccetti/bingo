@@ -1,48 +1,53 @@
-const source = new EventSource('/events')
-const ballsReceived = document.querySelector('#balls-received')
-const playerCard = document.querySelector('#player-card')
-const receivedCells = ballsReceived.querySelectorAll('td')
-const playerCardCells = playerCard.querySelectorAll('td')
-const NUMBER_OF_LETTERS = 5
-const NUMBERS_PER_LETTER = 15
+class Bingo {
+    private eventSource: EventSource
+    private playerCardCells: NodeListOf<HTMLTableDataCellElement>
+    private NUMBER_OF_LETTERS = 5
+    private NUMBERS_PER_LETTER = 15
 
-function cellFor(oneBasedNumber: number): HTMLTableDataCellElement {
-    const zeroBasedNumber = oneBasedNumber - 1
-    const colIndex = Math.floor(zeroBasedNumber / NUMBERS_PER_LETTER)
-    const rowIndex = zeroBasedNumber % NUMBERS_PER_LETTER
-    return receivedCells[rowIndex * NUMBER_OF_LETTERS + colIndex]
-}
+    constructor() {
+        this.eventSource = new EventSource('/events')
+        this.playerCardCells = document.querySelectorAll('#player-card td')
 
-function selectNumbers(lowerBound: number): number[] {
-    const nums = []
-    for (let i = lowerBound; i < lowerBound + NUMBERS_PER_LETTER; i++) {
-        nums.push(i)
+        this.populatePlayerCard()
+
+        for (let i = 1; i <= 75; i++)
+            this.cellFor(i).textContent = i.toString()
+
+        this.eventSource.onmessage = event => {
+            const number: number = parseInt(event.data)
+            this.cellFor(number).classList.add('received')
+        }
+
+        this.eventSource.onerror = () => {
+            // Stop EventSource from reconnecting after all data is sent
+            this.eventSource.close()
+        }
+
     }
-    // todo shuffle nums
-    return nums.slice(0, 5)
-}
 
-function populatePlayerCard(): void {
-    for (let colIndex = 0; colIndex < 5; colIndex++) {
-        const selectedNums = selectNumbers(colIndex * NUMBERS_PER_LETTER + 1)
-        for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
-            playerCardCells[rowIndex * NUMBER_OF_LETTERS + colIndex].textContent = selectedNums[rowIndex].toString()
+    private cellFor(oneBasedNumber: number): HTMLTableDataCellElement {
+        const zeroBasedNumber = oneBasedNumber - 1
+        const colIndex = Math.floor(zeroBasedNumber / this.NUMBERS_PER_LETTER)
+        const rowIndex = zeroBasedNumber % this.NUMBERS_PER_LETTER
+        const receivedCells: NodeListOf<HTMLTableDataCellElement> = document.querySelectorAll('#balls-received td')
+        return receivedCells[rowIndex * this.NUMBER_OF_LETTERS + colIndex]
+    }
+
+    private populatePlayerCard(): void {
+        function selectFiveNumbers(lowerBound: number): number[] {
+            const allNums: number[] = Array.from({length: 15}, (v, i) => i + lowerBound) // 1–15, or 16–29, etc.
+            return Array.from({length: 5}, () => // Choose 5 randomly
+                allNums.splice(Math.floor(Math.random() * allNums.length), 1)[0]
+            )
+        }
+
+        for (let colIndex = 0; colIndex < this.NUMBER_OF_LETTERS; colIndex++) {
+            const selectedNums = selectFiveNumbers(colIndex * this.NUMBERS_PER_LETTER + 1)
+            for (let rowIndex = 0; rowIndex < this.NUMBER_OF_LETTERS; rowIndex++) {
+                this.playerCardCells[rowIndex * this.NUMBER_OF_LETTERS + colIndex].textContent = selectedNums[rowIndex].toString()
+            }
         }
     }
 }
 
-populatePlayerCard()
-
-const addNumber = (number: number) => cellFor(number).textContent = number.toString()
-
-for (let i = 1; i <= 75; i++) addNumber(i)
-
-source.onmessage = event => {
-    const number: number = parseInt(event.data)
-    cellFor(number).classList.add('received')
-}
-
-source.onerror = event => {
-    // Stop EventSource from reconnecting after all data is sent
-    source.close()
-}
+new Bingo()

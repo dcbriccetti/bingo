@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "sourceMap": true,
+    "outFile": "static/app.js"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
