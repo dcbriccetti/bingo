@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Bingo Game</title>
+    <link rel="stylesheet" href="static/main.css">
 </head>
 <body>
 <h1>Bingo Game</h1>
-Balls: <span id="balls"></span>
+<table id="balls-received">
+    <tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
+    {% for i in range(15) %}
+    <tr><td></td><td></td><td></td><td></td><td></td></tr>
+    {% endfor %}
+</table>
 <script src="static/main.js"></script>
 </body>
 </html>
