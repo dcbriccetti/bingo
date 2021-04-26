@@ -14,8 +14,9 @@ class Bingo {
             this.cellFor(i).textContent = i.toString()
 
         this.eventSource.onmessage = event => {
-            const number: number = parseInt(event.data)
-            this.cellFor(number).classList.add('received')
+            const ballNumber: number = parseInt(event.data)
+            this.cellFor(ballNumber).classList.add('received')
+            this.updatePlayerCard(ballNumber)
         }
 
         this.eventSource.onerror = () => {
@@ -47,6 +48,18 @@ class Bingo {
                 this.playerCardCells[rowIndex * this.NUMBER_OF_LETTERS + colIndex].textContent = selectedNums[rowIndex].toString()
             }
         }
+        const centerCellIndex = 2 * this.NUMBER_OF_LETTERS + Math.floor(this.NUMBER_OF_LETTERS / 2);
+        const centerCell = this.playerCardCells[centerCellIndex];
+        centerCell.textContent = "★"
+        centerCell.classList.add('star')
+    }
+
+    private updatePlayerCard(ballNumber: number) {
+        this.playerCardCells.forEach(cell => {
+            if (cell.textContent === ballNumber.toString()) {
+                cell.classList.add('received')
+            }
+        })
     }
 }
 
