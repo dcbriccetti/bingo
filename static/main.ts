@@ -16,7 +16,9 @@ class Bingo {
         this.eventSource.onmessage = event => {
             const ballNumber: number = parseInt(event.data)
             this.cellFor(ballNumber).classList.add('received')
-            this.updatePlayerCard(ballNumber)
+            if (this.updatePlayerCard(ballNumber)) {
+                this.eventSource.close()
+            }
         }
 
         this.eventSource.onerror = () => {
@@ -57,12 +59,46 @@ class Bingo {
         centerCell.classList.add('star')
     }
 
-    private updatePlayerCard(ballNumber: number) {
+    private updatePlayerCard(ballNumber: number): boolean {
         this.playerCardCells.forEach(cell => {
             if (cell.textContent === ballNumber.toString()) {
                 cell.classList.add('received')
             }
         })
+        return this.playerWins()
+    }
+
+    private playerWins(): boolean {
+        return this.horizontalWin() || this.verticalWin() || this.diagonalWin()
+    }
+
+    private horizontalWin(): boolean {
+        for (let rowIndex = 0; rowIndex < this.NUMBER_OF_LETTERS ** 2; rowIndex += this.NUMBER_OF_LETTERS) {
+            if (this.numHorizontalMarks(rowIndex) == this.NUMBER_OF_LETTERS) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private verticalWin(): boolean {
+        return false
+    }
+
+    private diagonalWin(): boolean {
+        return false
+    }
+
+    private numHorizontalMarks(rowIndex: number) {
+        let marks = 0
+        for (let columnIndex = rowIndex; columnIndex < rowIndex + 5; columnIndex++)
+            if (this.cellIsMarked(columnIndex))
+                ++marks
+        return marks
+    }
+
+    private cellIsMarked(cellIndex: number) {
+        return this.playerCardCells[cellIndex].classList.contains('received');
     }
 }
 
