@@ -57,6 +57,7 @@ class Bingo {
         const centerCell = this.playerCardCells[centerCellIndex];
         centerCell.textContent = "★"
         centerCell.classList.add('star')
+        centerCell.classList.add('received')
     }
 
     private updatePlayerCard(ballNumber: number): boolean {
