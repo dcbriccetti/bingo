@@ -1,6 +1,6 @@
 class Bingo {
     private eventSource: EventSource
-    private playerCardCells: NodeListOf<HTMLTableDataCellElement>
+    private readonly playerCardCells: NodeListOf<HTMLTableDataCellElement>
     private NUMBER_OF_LETTERS = 5
     private NUMBERS_PER_LETTER = 15
 
@@ -36,9 +36,12 @@ class Bingo {
 
     private populatePlayerCard(): void {
         function selectFiveNumbers(lowerBound: number): number[] {
-            const allNums: number[] = Array.from({length: 15}, (v, i) => i + lowerBound) // 1–15, or 16–29, etc.
-            return Array.from({length: 5}, () => // Choose 5 randomly
-                allNums.splice(Math.floor(Math.random() * allNums.length), 1)[0]
+            const fifteenNumbers: number[] = Array.from({length: 15}, (_, i: number) => i + lowerBound) // 1–15, or 16–29, etc.
+            return Array.from({length: 5}, () => {  // Choose 5 randomly
+                    const selectedNumberIndex = Math.floor(Math.random() * fifteenNumbers.length)
+                    const selectedNumber: number = fifteenNumbers.splice(selectedNumberIndex, 1)[0]
+                    return selectedNumber
+                }
             )
         }
 
