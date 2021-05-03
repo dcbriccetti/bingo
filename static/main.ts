@@ -90,7 +90,7 @@ class Bingo {
                 cell.classList.add('received')
             }
         })
-        const playerWins = this.horizontalWin() || this.verticalWin() || this.diagonalWin()
+        const playerWins = this.horizontalWin() || this.verticalWin() || this.eitherDiagonalWin()
         return playerWins
     }
 
@@ -122,9 +122,28 @@ class Bingo {
         return false
     }
 
-    private diagonalWin(): boolean {
-
+    /**
+     * Returns whether the diagonal defined by indexStart and indexSpacing is fully marked
+     * @param indexStart is the beginning of the numbers diagonalWin checks
+     * @param indexSpacing is the space between elements of the diagonal
+     * @private
+     */
+    private diagonalWin(indexStart: number, indexSpacing: number) {
+        let markIndexes = []
+        for (let c = 0, cellIndex = indexStart; c < 5; ++c, cellIndex += indexSpacing) {
+            if (this.cellIsMarked(cellIndex)){
+                markIndexes.push(cellIndex)
+            }
+        }
+        if (markIndexes.length === 5) {
+            this.markWinning(markIndexes)
+            return true
+        }
         return false
+    }
+
+    private eitherDiagonalWin(): boolean {
+        return this.diagonalWin(4, 4) || this.diagonalWin(0, 6)
     }
 
     private marks(cellIndex: number, increment: number): number[] {
