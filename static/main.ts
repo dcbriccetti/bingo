@@ -96,24 +96,22 @@ class Bingo {
 
     /** Returns whether there is a horizontal win */
     private horizontalWin(): boolean {
-        return this.horizontalOrVerticalWin(5, 25, 1)
+        return this.horizontalOrVerticalWin(5)
     }
 
     /** Returns whether there is a vertical win */
     private verticalWin(): boolean {
-        return this.horizontalOrVerticalWin(1, 5, 5)
+        return this.horizontalOrVerticalWin(1)
     }
 
     /**
      * Returns whether there is a horizontal or vertical win
      * @param outerSpacing distance between cells (in the 1-dimensional array of cells) for rows or columns (1 or 5)
-     * @param maxCellIndex the maximum cell index
-     * @param increment
-     * @private
      */
-    private horizontalOrVerticalWin(outerSpacing: number, maxCellIndex: number, increment: number): boolean {
-        for (let cellIndex = 0; cellIndex < maxCellIndex; cellIndex += outerSpacing) {
-            const marks = this.marks(cellIndex, increment)
+    private horizontalOrVerticalWin(outerSpacing: number): boolean {
+        const increment = outerSpacing === 5 ? 1 : 5
+        for (let c = 0, cellIndex = 0; c < 5; ++c, cellIndex += outerSpacing) {
+            const marks = this.markedIndexes(cellIndex, increment)
             if (marks.length == 5) {
                 this.markWinning(marks)
                 return true
@@ -126,15 +124,9 @@ class Bingo {
      * Returns whether the diagonal defined by indexStart and indexSpacing is fully marked
      * @param indexStart is the beginning of the numbers diagonalWin checks
      * @param indexSpacing is the space between elements of the diagonal
-     * @private
      */
     private diagonalWin(indexStart: number, indexSpacing: number) {
-        let markIndexes = []
-        for (let c = 0, cellIndex = indexStart; c < 5; ++c, cellIndex += indexSpacing) {
-            if (this.cellIsMarked(cellIndex)){
-                markIndexes.push(cellIndex)
-            }
-        }
+        const markIndexes = this.markedIndexes(indexStart, indexSpacing)
         if (markIndexes.length === 5) {
             this.markWinning(markIndexes)
             return true
@@ -146,12 +138,12 @@ class Bingo {
         return this.diagonalWin(4, 4) || this.diagonalWin(0, 6)
     }
 
-    private marks(cellIndex: number, increment: number): number[] {
-        let markedIndexes = []
+    private markedIndexes(cellIndex: number, increment: number): number[] {
+        let indexes = []
         for (let c = 0, columnIndex = cellIndex; c < 5; ++c, columnIndex += increment)
             if (this.cellIsMarked(columnIndex))
-                markedIndexes.push(columnIndex)
-        return markedIndexes
+                indexes.push(columnIndex)
+        return indexes
     }
 
     private cellIsMarked(cellIndex: number) {
