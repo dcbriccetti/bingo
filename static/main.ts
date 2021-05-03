@@ -94,8 +94,12 @@ class Bingo {
     }
 
     private horizontalWin(): boolean {
-        for (let rowIndex = 0; rowIndex < this.NUMBER_OF_LETTERS ** 2; rowIndex += this.NUMBER_OF_LETTERS) {
-            if (this.numHorizontalMarks(rowIndex) == this.NUMBER_OF_LETTERS) {
+        const numLetters = this.NUMBER_OF_LETTERS;
+        for (let cellIndex = 0; cellIndex < numLetters ** 2; cellIndex += numLetters) {
+            if (this.numHorizontalMarks(cellIndex) == numLetters) {
+                for (let i = cellIndex; i < cellIndex + 5; i++) {
+                    this.playerCardCells[i].classList.add('winning-cell')
+                }
                 return true
             }
         }
@@ -103,19 +107,37 @@ class Bingo {
     }
 
     private verticalWin(): boolean {
+        const numLetters = this.NUMBER_OF_LETTERS;
+        for (let cellIndex = 0; cellIndex < 4; cellIndex++) {
+            if (this.numVerticalMarks(cellIndex) == numLetters) {
+                for (let i = cellIndex; i < 25; i += 5) {
+                    this.playerCardCells[i].classList.add('winning-cell')
+                }
+                return true
+            }
+        }
         return false
     }
 
     private diagonalWin(): boolean {
+
         return false
     }
 
-    private numHorizontalMarks(rowIndex: number) {
-        let marks = 0
+    private numHorizontalMarks(rowIndex: number): number {
+        let numMarks = 0
         for (let columnIndex = rowIndex; columnIndex < rowIndex + 5; columnIndex++)
             if (this.cellIsMarked(columnIndex))
-                ++marks
-        return marks
+                ++numMarks
+        return numMarks
+    }
+
+    private numVerticalMarks(cellIndex: number): number {
+        let numMarks = 0
+        for (let columnCellIndex = cellIndex; columnCellIndex < 25; columnCellIndex += 5)
+            if (this.cellIsMarked(columnCellIndex))
+                ++numMarks
+        return numMarks
     }
 
     private cellIsMarked(cellIndex: number) {

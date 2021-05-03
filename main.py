@@ -21,7 +21,7 @@ def events():
 
         for ball_number in ball_numbers:
             yield f'data: {ball_number}\n\n'
-            sleep(random() * 3)
+            sleep(0.1)
 
     return Response(event_stream(), mimetype="text/event-stream")
 
