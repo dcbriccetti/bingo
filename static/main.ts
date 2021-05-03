@@ -94,25 +94,18 @@ class Bingo {
     }
 
     private horizontalWin(): boolean {
-        const numLetters = this.NUMBER_OF_LETTERS;
-        for (let cellIndex = 0; cellIndex < numLetters ** 2; cellIndex += numLetters) {
-            if (this.numHorizontalMarks(cellIndex) == numLetters) {
-                for (let i = cellIndex; i < cellIndex + 5; i++) {
-                    this.playerCardCells[i].classList.add('winning-cell')
-                }
-                return true
-            }
-        }
-        return false
+        return this.horizontalOrVerticalWin(5, 25, 1)
     }
 
     private verticalWin(): boolean {
-        const numLetters = this.NUMBER_OF_LETTERS;
-        for (let cellIndex = 0; cellIndex < 4; cellIndex++) {
-            if (this.numVerticalMarks(cellIndex) == numLetters) {
-                for (let i = cellIndex; i < 25; i += 5) {
-                    this.playerCardCells[i].classList.add('winning-cell')
-                }
+        return this.horizontalOrVerticalWin(1, 5, 5)
+    }
+
+    private horizontalOrVerticalWin(outerSpacing: number, maxCellIndex: number, increment: number): boolean {
+        for (let cellIndex = 0; cellIndex < maxCellIndex; cellIndex += outerSpacing) {
+            const marks = this.marks(cellIndex, increment)
+            if (marks.length == 5) {
+                this.markWinning(marks)
                 return true
             }
         }
@@ -124,24 +117,20 @@ class Bingo {
         return false
     }
 
-    private numHorizontalMarks(rowIndex: number): number {
-        let numMarks = 0
-        for (let columnIndex = rowIndex; columnIndex < rowIndex + 5; columnIndex++)
+    private marks(cellIndex: number, increment: number): number[] {
+        let markedIndexes = []
+        for (let c = 0, columnIndex = cellIndex; c < 5; ++c, columnIndex += increment)
             if (this.cellIsMarked(columnIndex))
-                ++numMarks
-        return numMarks
-    }
-
-    private numVerticalMarks(cellIndex: number): number {
-        let numMarks = 0
-        for (let columnCellIndex = cellIndex; columnCellIndex < 25; columnCellIndex += 5)
-            if (this.cellIsMarked(columnCellIndex))
-                ++numMarks
-        return numMarks
+                markedIndexes.push(columnIndex)
+        return markedIndexes
     }
 
     private cellIsMarked(cellIndex: number) {
         return this.playerCardCells[cellIndex].classList.contains('received');
+    }
+
+    private markWinning(markedIndexes: number[]) {
+        markedIndexes.forEach(i => this.playerCardCells[i].classList.add('winning-cell'))
     }
 }
 
