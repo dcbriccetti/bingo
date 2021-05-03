@@ -1,3 +1,4 @@
+/** Client code for the Bingo simulator */
 class Bingo {
     private readonly eventSource: EventSource
     private readonly playerCardCells: NodeListOf<HTMLTableDataCellElement>
@@ -93,14 +94,23 @@ class Bingo {
         return playerWins
     }
 
+    /** Returns whether there is a horizontal win */
     private horizontalWin(): boolean {
         return this.horizontalOrVerticalWin(5, 25, 1)
     }
 
+    /** Returns whether there is a vertical win */
     private verticalWin(): boolean {
         return this.horizontalOrVerticalWin(1, 5, 5)
     }
 
+    /**
+     * Returns whether there is a horizontal or vertical win
+     * @param outerSpacing distance between cells (in the 1-dimensional array of cells) for rows or columns (1 or 5)
+     * @param maxCellIndex the maximum cell index
+     * @param increment
+     * @private
+     */
     private horizontalOrVerticalWin(outerSpacing: number, maxCellIndex: number, increment: number): boolean {
         for (let cellIndex = 0; cellIndex < maxCellIndex; cellIndex += outerSpacing) {
             const marks = this.marks(cellIndex, increment)
