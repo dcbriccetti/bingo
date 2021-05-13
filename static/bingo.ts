@@ -1,21 +1,21 @@
 /** Client code for the Bingo simulator */
+const NUMBER_OF_LETTERS = 5
+const NUMBERS_PER_LETTER = 15
+
 class Bingo {
     private readonly eventSource: EventSource
-    private readonly playerCardCells: NodeListOf<HTMLTableDataCellElement>
-    private readonly NUMBER_OF_LETTERS = 5
-    private readonly NUMBERS_PER_LETTER = 15
+    private readonly playerCard: PlayerCard
 
     constructor() {
         this.eventSource = new EventSource('/events')
-        this.playerCardCells = document.querySelectorAll('#player-card td')
+        this.playerCard = new PlayerCard('player-card-1')
 
         this.createReceivedDisplay()
-        this.createPlayerCard()
 
         this.eventSource.onmessage = event => {
             const ballNumber: number = parseInt(event.data)
             this.receivedDisplayCellFor(ballNumber).classList.add('received')
-            if (this.updatePlayerCard(ballNumber)) {
+            if (this.playerCard.update(ballNumber)) {
                 this.eventSource.close()
             }
         }
@@ -39,14 +39,26 @@ class Bingo {
      */
     private receivedDisplayCellFor(ballNumber: number): HTMLTableDataCellElement {
         const zeroBasedNumber = ballNumber - 1
-        const colIndex = Math.floor(zeroBasedNumber / this.NUMBERS_PER_LETTER)
-        const rowIndex = zeroBasedNumber % this.NUMBERS_PER_LETTER
+        const colIndex = Math.floor(zeroBasedNumber / NUMBERS_PER_LETTER)
+        const rowIndex = zeroBasedNumber % NUMBERS_PER_LETTER
         const receivedCells: NodeListOf<HTMLTableDataCellElement> = document.querySelectorAll('#balls-received td')
-        return receivedCells[rowIndex * this.NUMBER_OF_LETTERS + colIndex]
+        return receivedCells[rowIndex * NUMBER_OF_LETTERS + colIndex]
+    }
+}
+
+
+class PlayerCard {
+    public readonly playerCardCells: NodeListOf<HTMLTableDataCellElement>
+
+    constructor(cardId: string) {
+        let selector = '#' + cardId + ' td';
+        console.log(selector)
+        this.playerCardCells = document.querySelectorAll(selector)
+        this.create()
     }
 
     /** Puts randomly selected numbers, in the right range, in each of the 5 B…O columns */
-    private createPlayerCard(): void {
+    private create(): void {
 
         /**
          * Returns an array of five numbers randomly selected from the 15 integers starting with lowerBound
@@ -70,21 +82,21 @@ class Bingo {
             centerCell.classList.add('received')
         }
 
-        for (let colIndex = 0; colIndex < this.NUMBER_OF_LETTERS; colIndex++) {
-            const selectedNums = selectFiveNumbers(colIndex * this.NUMBERS_PER_LETTER + 1)
-            for (let rowIndex = 0; rowIndex < this.NUMBER_OF_LETTERS; rowIndex++) {
-                this.playerCardCells[rowIndex * this.NUMBER_OF_LETTERS + colIndex].textContent = selectedNums[rowIndex].toString()
+        for (let colIndex = 0; colIndex < NUMBER_OF_LETTERS; colIndex++) {
+            const selectedNums = selectFiveNumbers(colIndex * NUMBERS_PER_LETTER + 1)
+            for (let rowIndex = 0; rowIndex < NUMBER_OF_LETTERS; rowIndex++) {
+                this.playerCardCells[rowIndex * NUMBER_OF_LETTERS + colIndex].textContent = selectedNums[rowIndex].toString()
             }
         }
 
-        setStarInCenter(this.NUMBER_OF_LETTERS, this.playerCardCells)
+        setStarInCenter(NUMBER_OF_LETTERS, this.playerCardCells)
     }
 
     /**
      * Updates the player card with the number given and returns whether the player wins
      * @param ballNumber the number to mark on the player card
      */
-    private updatePlayerCard(ballNumber: number): boolean {
+    public update(ballNumber: number): boolean {
         this.playerCardCells.forEach(cell => {
             if (cell.textContent === ballNumber.toString()) {
                 cell.classList.add('received')
@@ -153,6 +165,7 @@ class Bingo {
     private markWinning(markedIndexes: number[]) {
         markedIndexes.forEach(i => this.playerCardCells[i].classList.add('winning-cell'))
     }
+
 }
 
 new Bingo()
