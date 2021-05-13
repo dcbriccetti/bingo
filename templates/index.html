@@ -6,26 +6,33 @@
     <link rel="stylesheet" href="static/main.css">
 </head>
 <body>
+
 <h1>Bingo Game</h1>
+
 <h2>Balls Received</h2>
+
 <table id="balls-received">
     <tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
     {% for i in range(15) %}
     <tr><td></td><td></td><td></td><td></td><td></td></tr>
     {% endfor %}
 </table>
+
+<h2>Player Cards</h2>
+
 {% for i in range(2) %}
-    <h2>Player Card</h2>
     <table id="player-card-{{ loop.index }}">
     <tr><th>B</th><th>I</th><th>N</th><th>G</th><th>O</th></tr>
     {% for i in range(5) %}
         <tr><td></td><td></td><td></td><td></td><td></td></tr>
     {% endfor %}
+    </table>
 {% endfor %}
-</table>
+
 <script src="static/app.js"></script>
 <script>
     new Bingo();
 </script>
+
 </body>
 </html>

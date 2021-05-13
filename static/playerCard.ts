@@ -1,10 +1,8 @@
 class PlayerCard {
-    public readonly playerCardCells: NodeListOf<HTMLTableDataCellElement>
+    public readonly cells: NodeListOf<HTMLTableDataCellElement>
 
     constructor(cardId: string) {
-        let selector = '#' + cardId + ' td';
-        console.log(selector)
-        this.playerCardCells = document.querySelectorAll(selector)
+        this.cells = document.querySelectorAll(`#${cardId} td`)
         this.create()
     }
 
@@ -36,11 +34,11 @@ class PlayerCard {
         for (let colIndex = 0; colIndex < NUMBER_OF_LETTERS; colIndex++) {
             const selectedNums = selectFiveNumbers(colIndex * NUMBERS_PER_LETTER + 1)
             for (let rowIndex = 0; rowIndex < NUMBER_OF_LETTERS; rowIndex++) {
-                this.playerCardCells[rowIndex * NUMBER_OF_LETTERS + colIndex].textContent = selectedNums[rowIndex].toString()
+                this.cells[rowIndex * NUMBER_OF_LETTERS + colIndex].textContent = selectedNums[rowIndex].toString()
             }
         }
 
-        setStarInCenter(NUMBER_OF_LETTERS, this.playerCardCells)
+        setStarInCenter(NUMBER_OF_LETTERS, this.cells)
     }
 
     /**
@@ -48,7 +46,7 @@ class PlayerCard {
      * @param ballNumber the number to mark on the player card
      */
     public update(ballNumber: number): boolean {
-        this.playerCardCells.forEach(cell => {
+        this.cells.forEach(cell => {
             if (cell.textContent === ballNumber.toString()) {
                 cell.classList.add('received')
             }
@@ -75,7 +73,7 @@ class PlayerCard {
         const increment = outerSpacing === 5 ? 1 : 5
         for (let c = 0, cellIndex = 0; c < 5; ++c, cellIndex += outerSpacing) {
             const marks = this.markedIndexes(cellIndex, increment)
-            if (marks.length == 5) {
+            if (marks.length === 5) {
                 this.markWinning(marks)
                 return true
             }
@@ -110,11 +108,11 @@ class PlayerCard {
     }
 
     private cellIsMarked(cellIndex: number) {
-        return this.playerCardCells[cellIndex].classList.contains('received');
+        return this.cells[cellIndex].classList.contains('received');
     }
 
     private markWinning(markedIndexes: number[]) {
-        markedIndexes.forEach(i => this.playerCardCells[i].classList.add('winning-cell'))
+        markedIndexes.forEach(i => this.cells[i].classList.add('winning-cell'))
     }
 
 }
