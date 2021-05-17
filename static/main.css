@@ -9,6 +9,7 @@ body {
 
 #player-cards {
     display: flex;
+    align-items: flex-start;
     flex-wrap: wrap;
     column-gap: 1em;
 }
