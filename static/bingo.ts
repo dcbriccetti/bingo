@@ -4,20 +4,25 @@ const NUMBERS_PER_LETTER = 15
 
 class Bingo {
     private readonly eventSource: EventSource
-    private readonly playerCard: PlayerCard
+    private readonly playerCards: PlayerCard[]
 
     constructor() {
         this.eventSource = new EventSource('/events')
-        this.playerCard = new PlayerCard('player-card-1')
+        this.playerCards = [
+            new PlayerCard('player-card-1'), new PlayerCard('player-card-2'), new PlayerCard('player-card-3'),
+            new PlayerCard('player-card-4'), new PlayerCard('player-card-5'), new PlayerCard('player-card-6')
+        ]
 
         this.createReceivedDisplay()
 
         this.eventSource.onmessage = event => {
             const ballNumber: number = parseInt(event.data)
             this.receivedDisplayCellFor(ballNumber).classList.add('received')
-            if (this.playerCard.update(ballNumber)) {
-                this.eventSource.close()
-            }
+            this.playerCards.forEach(card => {
+                if (card.update(ballNumber)) {
+                    this.eventSource.close()
+                }
+            })
         }
 
         this.eventSource.onerror = () => {

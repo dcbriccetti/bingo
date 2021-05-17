@@ -1,3 +1,18 @@
+body {
+    font-family: Helvetica, serif;
+}
+
+#container {
+    display: flex;
+    column-gap: 1em;
+}
+
+#player-cards {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1em;
+}
+
 table {
     border-collapse: collapse;
     margin-bottom: 1em;
